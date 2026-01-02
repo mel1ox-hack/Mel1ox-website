@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>PANEL VIP - MEL1OX DARK MODE</title>
+
+<style>
+* {box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;}
+
+body {
+  background: radial-gradient(circle at center, #1a001f 0%, #000 100%);
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* PASSWORD SCREEN */
+#lockScreen {
+  width: 320px;
+  background: rgba(20,20,20,0.85);
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+#lockScreen input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  margin-top: 10px;
+  outline: none;
+}
+
+#lockScreen button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(90deg, #6a00ff, #9b4dff);
+  color: #fff;
+  font-weight: 600;
+}
+
+#error {
+  color: #ff4d4d;
+  margin-top: 10px;
+  display: none;
+}
+
+/* PANEL */
+.painel {
+  width: 340px;
+  background: rgba(20,20,20,0.8);
+  border-radius: 24px;
+  padding: 25px;
+  backdrop-filter: blur(12px);
+  display: none;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.funcao {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.05);
+  padding: 12px;
+  border-radius: 14px;
+  margin: 8px 0;
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #9b4dff;
+}
+
+.slider {
+  width: 100%;
+}
+
+button#ativar {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(90deg, #6a00ff, #9b4dff);
+  color: #fff;
+  font-weight: 600;
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #bb86fc;
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD SCREEN -->
+<div id="lockScreen">
+  <h2>🔐 VIP ACCESS</h2>
+  <p>Enter password to continue</p>
+  <input type="password" id="passwordInput" placeholder="Password">
+  <button onclick="checkPassword()">UNLOCK</button>
+  <div id="error">❌ Wrong Password</div>
+</div>
+
+<!-- MAIN PANEL -->
+<div class="painel" id="panel">
+  <h2>⚙️ MEL1OX SENSI IOS,ANDROID & PC</h2>
+
+  <div class="funcao"><label>LUCKY HEADSHOT☠️</label><input type="checkbox"></div>
+  <div class="funcao"><label>10% NO RECOIL</label><input type="checkbox"></div>
+  <div class="funcao"><label>SENSI ADJUSTMENT</label><input type="range" class="slider"></div>
+  <div class="funcao"><label>HIGH PERFORMANCE MODE</label><input type="checkbox"></div>
+  <div class="funcao"><label>ANTI BAN ACTIVE</label><input type="checkbox"></div>
+  <div class="funcao"><label>30% DRAG HEADSHOT</label><input type="checkbox"></div>
+  <div class="funcao"><label>SENSI</label><input type="range" class="slider"></div>
+  <div class="funcao"><label>PREMIUM BYPASS</label><input type="checkbox"></div>
+
+  <button id="ativar">ACTIVATE FUNCTIONS</button>
+</div>
+
+<div class="toast" id="toast">✅ Function Successfully activated!</div>
+
+<script>
+const CORRECT_PASSWORD = "MEL1OXHACK71";
+
+function checkPassword() {
+  const input = document.getElementById("passwordInput").value;
+  const error = document.getElementById("error");
+
+  if (input === CORRECT_PASSWORD) {
+    document.getElementById("lockScreen").style.display = "none";
+    document.getElementById("panel").style.display = "block";
+  } else {
+    error.style.display = "block";
+  }
+}
+
+const ativar = document.getElementById('ativar');
+const toast = document.getElementById('toast');
+
+ativar.addEventListener('click', () => {
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 2000);
+});
+</script>
+
+</body>
+</html>
