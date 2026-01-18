@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MEL1OX VIP PANEL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"San Francisco",Arial}
+html,body{width:100%;height:100%;margin:0;}
+body{background:#000;display:flex;justify-content:center;align-items:center;}
+.container{width:100%;height:100%;display:flex;justify-content:center;align-items:center;}
+.painel{width:90%;max-width:340px;background:#fff;border-radius:22px;padding:25px;border:1px solid #ff4fa3;box-shadow:0 0 25px rgba(255,0,128,.35);}
+h2{text-align:center;color:#ff4fa3;margin-bottom:15px;}
+input[type="text"]{width:100%;padding:14px;margin:10px 0;border-radius:12px;border:1px solid #ffb3d9;background:#ffe4f1;outline:none;}
+.btn{width:100%;padding:14px;margin-top:15px;border:none;border-radius:14px;background:#ff4fa3;color:#fff;font-weight:600;font-size:15px;}
+.option{display:flex;align-items:center;margin:10px 0;color:#000;}
+.option label{margin-left:10px;}
+input[type="checkbox"]{width:18px;height:18px;accent-color:#ff4fa3;}
+.tabs{display:flex;background:#ffe4f1;border-radius:12px;overflow:hidden;margin-bottom:15px;}
+.tab{flex:1;border:none;padding:10px;background:none;color:#ff4fa3;font-weight:600;cursor:pointer;}
+.tab.active{background:#ff4fa3;color:#fff;}
+.slider-container span{color:#ff4fa3;font-size:14px;}
+input[type="range"]{width:100%;}
+select{width:100%;padding:10px;border-radius:10px;border:1px solid #ffb3d9;background:#ffe4f1;margin-top:10px;}
+.loading-bar{width:100%;height:14px;background:#ffd6eb;border-radius:10px;overflow:hidden;display:none;margin-top:10px;}
+.loading-fill{height:100%;width:0%;background:#ff4fa3;transition:width .2s;}
+#panelMain{display:none;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- KEY PANEL -->
+<div class="painel" id="keyPanel">
+  <h2>🔑 VIP Key Access</h2>
+  <input id="keyInput" placeholder="Enter VIP Key">
+  <button class="btn" onclick="verifyKey()">UNLOCK</button>
+</div>
+
+<!-- MAIN PANEL -->
+<div class="painel" id="panelMain">
+  <h2>MEL1OX VIP</h2>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(0)">Function</button>
+    <button class="tab" onclick="switchTab(1)">Info</button>
+  </div>
+
+  <div id="tab0">
+    <div class="option"><input type="checkbox"><label>Full Accuracy</label></div>
+    <div class="option"><input type="checkbox"><label>Remove Shake</label></div>
+    <div class="option"><input type="checkbox"><label>Anti Lag</label></div>
+    <div class="option"><input type="checkbox"><label>Optimize System</label></div>
+
+    <div class="slider-container">
+      <span>Accuracy: <span id="valor">6</span></span>
+      <input type="range" min="1" max="10" value="6" id="slider">
+    </div>
+
+    <select>
+      <option>Head Assist</option>
+      <option>Body Assist</option>
+      <option>Mixed Assist</option>
+    </select>
+
+    <button class="btn" id="injectBtn">Inject Function</button>
+
+    <div class="loading-bar" id="loadingBar">
+      <div class="loading-fill" id="loadingFill"></div>
+    </div>
+  </div>
+
+  <div id="tab1" style="display:none;">
+    <p style="color:#000; text-align:center;">
+      Energized · Inhale · Back · Jump
+    </p>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ===== DEVICE ID ===== */
+let deviceId = localStorage.getItem("device_id");
+if(!deviceId){
+  deviceId = "DEV-" + Math.random().toString(36).substring(2,10).toUpperCase();
+  localStorage.setItem("device_id", deviceId);
+}
+
+/* ===== SLIDER ===== */
+const slider=document.getElementById("slider");
+const valor=document.getElementById("valor");
+slider.oninput=()=>valor.textContent=slider.value;
+
+/* ===== LOADING ===== */
+const injectBtn=document.getElementById("injectBtn");
+const loadingBar=document.getElementById("loadingBar");
+const loadingFill=document.getElementById("loadingFill");
+
+injectBtn.onclick=()=>{
+  injectBtn.style.display="none";
+  loadingBar.style.display="block";
+  let p=0;
+  const i=setInterval(()=>{
+    p+=5;
+    loadingFill.style.width=p+"%";
+    if(p>=100){
+      clearInterval(i);
+      setTimeout(()=>{
+        loadingBar.style.display="none";
+        injectBtn.style.display="block";
+        injectBtn.textContent="Function Active";
+      },300);
+    }
+  },120);
+};
+
+/* ===== KEY SYSTEM ===== */
+const KEY_LIFETIME=24*60*60*1000;
+let db=JSON.parse(localStorage.getItem("vip_keys"))||{};
+
+function verifyKey(){
+  const k=keyInput.value.trim();
+  const now=Date.now();
+
+  if(db[k]){
+    if(now > db[k].expire){
+      return alert("Key expired");
+    }
+    if(db[k].used){
+      if(db[k].device !== deviceId){
+        return alert("This key was used on another device");
+      } else {
+        // allow if same device
+        unlock();
+        return;
+      }
+    }
+
+    // use key on this device
+    db[k].used=true;
+    db[k].device=deviceId;
+    localStorage.setItem("vip_keys", JSON.stringify(db));
+    localStorage.setItem("vip_access","true");
+    unlock();
+  }else{
+    alert("Invalid key");
+  }
+}
+
+function unlock(){
+  keyPanel.style.display="none";
+  panelMain.style.display="block";
+}
+
+/* auto unlock */
+if(localStorage.getItem("vip_access")==="true"){
+  unlock();
+}
+
+/* ===== TABS ===== */
+function switchTab(n){
+  document.getElementById("tab0").style.display = n===0 ? "block" : "none";
+  document.getElementById("tab1").style.display = n===1 ? "block" : "none";
+  document.querySelectorAll(".tab").forEach((t,i)=>{
+    t.classList.toggle("active", i===n);
+  });
+}
+
+/* Anti inspect */
+document.addEventListener("contextmenu",e=>e.preventDefault());
+document.addEventListener("keydown",e=>{
+  if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&e.keyCode===73)||(e.ctrlKey&&e.keyCode===85)){
+    e.preventDefault();
+  }
+});
+
+/* Android only */
+if(!navigator.userAgent.includes("Android")){
+  document.body.innerHTML="<h2 style='color:red;text-align:center'>ACCESS DENIED</h2>";
+}
+</script>
+</body>
+</html>
