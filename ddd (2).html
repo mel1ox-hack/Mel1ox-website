@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MEL1OX ADMIN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;font-family:Arial;}
+.box{width:90%;max-width:360px;background:#fff;padding:25px;border-radius:22px;border:1px solid #ff4fa3;box-shadow:0 0 25px rgba(255,0,128,.35);}
+h2{text-align:center;color:#ff4fa3;margin-bottom:15px;}
+input,select,button{width:100%;padding:14px;margin-top:10px;border-radius:14px;border:1px solid #ffb3d9;font-size:15px;}
+button{background:#ff4fa3;color:#fff;border:none;font-weight:600;}
+.key-box{margin-top:15px;padding:12px;background:#ffe4f1;border-radius:12px;text-align:center;font-weight:600;color:#000;user-select:all;}
+.small{text-align:center;margin-top:10px;font-size:13px;color:#555;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>🔐 MEL1OX ADMIN</h2>
+  <input id="adminPass" placeholder="Enter admin password">
+  <button onclick="unlockAdmin()">LOGIN</button>
+
+  <div id="adminArea" style="display:none;">
+    <select id="duration">
+      <option value="1">24 Hours</option>
+      <option value="7">7 Days</option>
+      <option value="30">30 Days</option>
+    </select>
+    <button onclick="generateKey()">Generate VIP Key</button>
+    <div class="key-box" id="output">No key generated</div>
+    <div class="small">Tap key to copy</div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "MEL1OX_ADMIN";
+
+function unlockAdmin(){
+  const p = document.getElementById("adminPass").value;
+  if(p === ADMIN_PASSWORD){
+    document.getElementById("adminArea").style.display = "block";
+  } else {
+    alert("Wrong admin password");
+  }
+}
+
+function randomKey(){
+  return "MEL1OX-" + Math.random().toString(36).substring(2,7).toUpperCase();
+}
+
+function generateKey(){
+  const days = parseInt(document.getElementById("duration").value);
+  const expire = Date.now() + (days * 24 * 60 * 60 * 1000);
+  const key = randomKey();
+
+  let db = JSON.parse(localStorage.getItem("vip_keys")) || {};
+  db[key] = {expire, used:false, device:null};
+
+  localStorage.setItem("vip_keys", JSON.stringify(db));
+
+  const out = document.getElementById("output");
+  out.textContent = key;
+  navigator.clipboard?.writeText(key);
+}
+
+document.getElementById("output").onclick = function(){
+  navigator.clipboard?.writeText(this.textContent);
+}
+</script>
+</body>
+</html>
