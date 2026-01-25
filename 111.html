@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brasi Panel V3</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
+  }
+
+  /* Welcome Screen */
+  #welcome {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    text-align: center;
+    z-index: 999;
+  }
+
+  /* Main Screen */
+  #main {
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: relative;
+  }
+
+  /* Canvas for particles */
+  #particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+
+  .box {
+    width: 90%;
+    max-width: 600px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #1e90ff;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+  }
+
+  input {
+    width: 100%;
+    padding: 16px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border: 2px solid #1e90ff;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 18px;
+  }
+
+  button {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: #1e90ff;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .links {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .links button {
+    width: 30%;
+  }
+
+  .options {
+    text-align: left;
+  }
+
+  .options label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    font-size: 18px;
+  }
+
+  #inject {
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div id="welcome">Welcome to Brasi Panel V3</div>
+
+<div id="main">
+  <canvas id="particles"></canvas>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login" class="screen">
+    <div class="box">
+      <h2>Login</h2>
+      <input id="user" placeholder="User" />
+      <input id="code" placeholder="Code" type="password" />
+
+      <div class="links">
+        <button onclick="openLink(1)">Link 1</button>
+        <button onclick="openLink(2)">Link 2</button>
+        <button onclick="openLink(3)">Link 3</button>
+      </div>
+
+      <button onclick="login()">Unlock</button>
+    </div>
+  </div>
+
+  <!-- MAIN PANEL -->
+  <div id="panel" class="screen" style="display:none;">
+    <div class="box">
+      <h2>Panel</h2>
+      <div class="options">
+        <label><input type="checkbox" id="opt1"> Magic bullet Zombie</label>
+        <label><input type="checkbox" id="opt2"> Magic bullet 600%</label>
+        <label><input type="checkbox" id="opt3"> Aimbot + shop</label>
+      </div>
+      <button id="inject" onclick="inject()">Inject</button>
+    </div>
+  </div>
+</div>
+
+<audio id="touchSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+
+<script>
+  // Speech on touch
+  function speak(text) {
+    const synth = window.speechSynthesis;
+    const utter = new SpeechSynthesisUtterance(text);
+    synth.speak(utter);
+  }
+
+  function playSound(text) {
+    const sound = document.getElementById("touchSound");
+    sound.play();
+    speak(text);
+  }
+
+  // Open link buttons
+  function openLink(n) {
+    playSound("Link " + n);
+    alert("Link " + n + " pressed");
+  }
+
+  // Login (ONLY works with user=admin, code=1234)
+  function login() {
+    const user = document.getElementById("user").value;
+    const code = document.getElementById("code").value;
+
+    if (user.trim() === "" || code.trim() === "") {
+      playSound("Please enter user and code");
+      alert("Enter User & Code");
+      return;
+    }
+
+    if (user === "MEL1OX" && code === "TEAm") {
+      playSound("Unlock");
+      document.getElementById("login").style.display = "none";
+      document.getElementById("panel").style.display = "flex";
+    } else {
+      playSound("Incorrect user or code");
+      alert("Incorrect User or Code");
+    }
+  }
+
+  function inject() {
+    playSound("Inject");
+    alert("Injected!");
+  }
+
+  // Welcome fade
+  setTimeout(() => {
+    document.getElementById("welcome").style.transition = "opacity 1s";
+    document.getElementById("welcome").style.opacity = 0;
+    setTimeout(() => {
+      document.getElementById("welcome").style.display = "none";
+      document.getElementById("main").style.display = "block";
+    }, 1000);
+  }, 3000);
+
+  // Particles
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1,
+      vx: Math.random() * 0.5 - 0.25,
+      vy: Math.random() * 0.5 - 0.25
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(30, 144, 255, 0.7)";
+      ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+
+</body>
+</html>

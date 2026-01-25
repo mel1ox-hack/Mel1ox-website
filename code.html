@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User & Code</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#000;
+  font-family:-apple-system,BlinkMacSystemFont,"San Francisco",Arial;
+}
+
+.container{
+  width:90%;
+  max-width:360px;
+  background:#fff;
+  padding:25px;
+  border-radius:22px;
+  border:1px solid #ff4fa3;
+  box-shadow:0 0 25px rgba(255,0,128,.35);
+  text-align:center;
+}
+
+.key{
+  margin-top:15px;
+  padding:12px;
+  background:#ffe4f1;
+  border-radius:12px;
+  font-weight:600;
+  color:#000;
+  user-select:all;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:none;
+  background:linear-gradient(90deg, #ff4fa3, #e60073);
+  color:#fff;
+  font-weight:600;
+  margin-top:15px;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>🔐 Your User & Code</h2>
+  <div class="key" id="keyOutput">User: MEL1OX<br>Code: TEAm</div>
+  <button class="btn" onclick="copyKey()">Copy User and Code</button>
+</div>
+
+<script>
+function copyKey(){
+  const user = "admin";
+  const code = "1234";
+  const text = "User: " + user + "\nCode: " + code;
+  navigator.clipboard.writeText(text);
+  alert("User and Code copied!");
+}
+</script>
+
+</body>
+</html>
