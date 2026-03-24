@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MelKey Generator</title>
+
+<style>
+body {
+    background: black;
+    color: #00ff00;
+    font-family: monospace;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.box {
+    border: 1px solid #0f0;
+    padding: 20px;
+    margin: 20px;
+}
+
+.btn {
+    border: 1px solid #0f0;
+    padding: 12px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#loadingScreen {
+    position: fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    color:#0f0;
+    text-align:center;
+    padding-top: 50px;
+}
+
+.loaderLineContainer {
+    width: 80%;
+    height: 5px;
+    border: 1px solid #0f0;
+    margin: 30px auto;
+    overflow: hidden;
+}
+
+.loaderLine {
+    width: 0%;
+    height: 100%;
+    background: #0f0;
+    transition: width 0.1s linear;
+}
+
+#keyBox {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- CLICK SOUND -->
+<audio id="clickSound">
+    <source src="https://www.soundjay.com/button/sounds/button-16.mp3" type="audio/mpeg">
+</audio>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+    <h2>Loading</h2>
+    <div class="loaderLineContainer">
+        <div class="loaderLine" id="loadingLine"></div>
+    </div>
+</div>
+
+<!-- KEY GENERATOR BOX -->
+<div class="box" id="keyBox">
+    <h2>KEY GENERATOR</h2>
+    <p id="key">Click generate</p>
+    <div class="btn" onclick="generate()">GENERATE KEY</div>
+    <div class="btn" onclick="backToLogin()">BACK TO LOGIN</div>
+</div>
+
+<script>
+// STARTUP LOADING 30 SEC
+window.onload = function(){
+    const loadingScreen = document.getElementById('loadingScreen');
+    const line = document.getElementById('loadingLine');
+    const keyBox = document.getElementById('keyBox');
+
+    let startTime = performance.now();
+    function animate(now){
+        let elapsed = now - startTime;
+        let progress = Math.min(elapsed / 30000, 1) * 100; // 30 sec
+        line.style.width = progress + "%";
+        if(progress < 100){
+            requestAnimationFrame(animate);
+        } else {
+            loadingScreen.style.display = "none";
+            keyBox.style.display = "block";
+        }
+    }
+    requestAnimationFrame(animate);
+}
+
+// GENERATE KEY
+function generate(){
+    const sound = document.getElementById('clickSound');
+    sound.currentTime = 0;
+    sound.play();
+
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let randomPart = "";
+    for(let i = 0; i < 6; i++){
+        randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    let key = "MEL1OX_TEAM_" + randomPart;
+    let time = Date.now();
+    localStorage.setItem("mlx_key", key);
+    localStorage.setItem("mlx_time", time);
+    document.getElementById("key").innerText = key;
+}
+
+// BACK TO LOGIN WITH CLICK SOUND
+function backToLogin(){
+    const sound = document.getElementById('clickSound');
+    sound.currentTime = 0;
+    sound.play();
+
+    // Add a loading effect if you want
+    const keyBox = document.getElementById('keyBox');
+    keyBox.style.display = "none";
+    const loadingScreen = document.getElementById('loadingScreen');
+    const line = document.getElementById('loadingLine');
+    loadingScreen.style.display = "block";
+
+    let startTime = performance.now();
+    function animate(now){
+        let elapsed = now - startTime;
+        let progress = Math.min(elapsed / 5000, 1) * 100; // 5 sec loading back
+        line.style.width = progress + "%";
+        if(progress < 100){
+            requestAnimationFrame(animate);
+        } else {
+            window.location.href = 'login.html'; // <-- put your login link here
+        }
+    }
+    requestAnimationFrame(animate);
+}
+</script>
+
+</body>
+</html>

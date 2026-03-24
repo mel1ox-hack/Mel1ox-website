@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meliox Sensi</title>
+
+<style>
+body {
+    background: #000;
+    color: #00ff00;
+    font-family: monospace;
+    margin: 0;
+    text-align: center;
+}
+
+.screen { display: none; padding: 20px; }
+.active { display: block; }
+
+.input {
+    padding: 10px;
+    width: 80%;
+    margin: 10px;
+    background: #001100;
+    color: #0f0;
+    border: 1px solid #0f0;
+}
+
+.btn {
+    border: 1px solid #0f0;
+    padding: 12px;
+    margin: 10px;
+    cursor: pointer;
+    display: inline-block;
+    background: #001100;
+}
+
+.box {
+    border: 1px solid #0f0;
+    padding: 20px;
+    margin: 20px;
+    background: #001100;
+}
+
+#loadingScreen, #sensiLoading {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    color:#0f0;
+    font-family: monospace;
+    text-align:center;
+    padding-top: 50px;
+    z-index: 9999;
+}
+
+.loaderLineContainer {
+    width: 80%;
+    height: 5px;
+    border: 1px solid #0f0;
+    margin: 30px auto;
+    overflow: hidden;
+}
+
+.loaderLine {
+    width: 0%;
+    height: 100%;
+    background: #0f0;
+    transition: width 0.1s linear;
+}
+
+#finalButton {
+    display: inline-block;
+    margin-top: 20px;
+    border: 1px solid #0f0;
+    padding: 10px 20px;
+    background: #001100;
+    font-weight: bold;
+}
+
+#deviceDetected {
+    margin: 20px 0;
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity 1s;
+}
+</style>
+</head>
+
+<body>
+
+<!-- CLICK SOUND -->
+<audio id="clickSound">
+    <source src="https://www.soundjay.com/button/sounds/button-16.mp3" type="audio/mpeg">
+</audio>
+
+<!-- STARTUP LOADING SCREEN -->
+<div id="loadingScreen">
+    <h2>Loading<span id="startupDots"></span></h2>
+    <div class="loaderLineContainer">
+        <div class="loaderLine" id="startupLine"></div>
+    </div>
+</div>
+
+<!-- 🔐 ACCESS -->
+<div id="lock" class="screen">
+    <div class="box">
+        <h2>ENTER ACCESS</h2>
+        <div class="btn" onclick="window.open('https://alpharede.com/cody','_blank')">GET KEY</div>
+        <input class="input" id="keyInput" placeholder="ENTER KEY">
+        <div class="btn" onclick="check()">UNLOCK</div>
+        <p id="status"></p>
+    </div>
+</div>
+
+<!-- 🔥 APP -->
+<div id="app" class="screen">
+    <div class="box">
+        <h2>SENSITIVITY SYSTEM 🔥</h2>
+        <div class="btn" onclick="genSensi()">GENERATE SENSI</div>
+
+        <div id="deviceDetected"></div> <!-- Animated device message -->
+        <div id="result"></div>
+        <div id="finalButton"></div>
+    </div>
+</div>
+
+<!-- SENSI GENERATING LOADING -->
+<div id="sensiLoading">
+    <h2>Detecting device type<span id="sensiDots"></span></h2>
+    <div class="loaderLineContainer">
+        <div class="loaderLine" id="sensiLine"></div>
+    </div>
+</div>
+
+<script>
+// Load key
+let currentKey = localStorage.getItem("mlx_key") || "";
+let keyTime = parseInt(localStorage.getItem("mlx_time")) || 0;
+
+// DOTS ANIMATION
+function animateDots(elementId){
+    const el = document.getElementById(elementId);
+    let dots = "";
+    return setInterval(()=>{
+        dots += ".";
+        if(dots.length > 3) dots = "";
+        el.innerText = dots;
+    }, 500);
+}
+
+// LINE ANIMATION
+function animateLine(lineElement, duration){
+    lineElement.style.width = "0%";
+    let startTime = performance.now();
+    return new Promise(resolve => {
+        function step(now){
+            let elapsed = now - startTime;
+            let progress = Math.min(elapsed/duration,1) * 100;
+            lineElement.style.width = progress + "%";
+            if(progress < 100){
+                requestAnimationFrame(step);
+            } else {
+                resolve();
+            }
+        }
+        requestAnimationFrame(step);
+    });
+}
+
+// DEVICE DETECTION
+function getDeviceName() {
+    const ua = navigator.userAgent;
+    if (/iPhone/i.test(ua)) return "iPhone";
+    if (/iPad/i.test(ua)) return "iPad";
+    if (/Android/i.test(ua)) return "Android Phone";
+    if (/Windows NT/i.test(ua)) return "Windows PC";
+    if (/Macintosh/i.test(ua)) return "MacBook";
+    return "Unknown Device";
+}
+
+// STARTUP LOADING
+window.onload = async function(){
+    const loadScreen = document.getElementById("loadingScreen");
+    const lockScreen = document.getElementById("lock");
+    const line = document.getElementById("startupLine");
+
+    loadScreen.style.display = "block";
+    const dotsInterval = animateDots("startupDots");
+    await animateLine(line, 17000);
+    clearInterval(dotsInterval);
+    loadScreen.style.display = "none";
+    lockScreen.classList.add("active");
+};
+
+// CHECK KEY
+function check(){
+    const input = document.getElementById("keyInput").value;
+    const status = document.getElementById("status");
+
+    if(!currentKey){
+        status.innerText = "Generate key first ❌";
+        return;
+    }
+
+    const diff = (Date.now() - keyTime)/1000;
+
+    if(input === currentKey){
+        if(diff <= 60){
+            status.innerText = "ACCESS GRANTED 🔥";
+            setTimeout(()=> show("app"), 800);
+        } else {
+            status.innerText = "KEY EXPIRED ⏳";
+        }
+    } else {
+        status.innerText = "INVALID KEY ❌";
+    }
+}
+
+// NAVIGATION
+function show(id){
+    document.getElementById("lock").classList.remove("active");
+    document.getElementById("app").classList.remove("active");
+    document.getElementById(id).classList.add("active");
+}
+
+// SENSI GENERATOR
+function rand(){ return Math.floor(Math.random()*20)+180; }
+function randPercent(){ return Math.floor(Math.random()*7)+49; }
+
+async function genSensi(){
+    const sensiScreen = document.getElementById("sensiLoading");
+    const appScreen = document.getElementById("app");
+    const line = document.getElementById("sensiLine");
+    const button = appScreen.querySelector(".btn");
+    const deviceEl = document.getElementById("deviceDetected");
+
+    button.style.display = "none";
+    sensiScreen.style.display = "block";
+    appScreen.style.display = "none";
+
+    const dotsInterval = animateDots("sensiDots");
+    await animateLine(line, 20000);
+    clearInterval(dotsInterval);
+
+    // Show device message with fade-in
+    const deviceName = getDeviceName();
+    sensiScreen.style.display = "none";
+    appScreen.style.display = "block";
+    deviceEl.innerText = "Device detected: " + deviceName;
+    deviceEl.style.opacity = 0;
+    setTimeout(() => { deviceEl.style.opacity = 1; }, 100);
+
+    // Wait 2.5 seconds for effect
+    setTimeout(() => {
+        // Show sensitivity results
+        document.getElementById("result").innerHTML =
+            "<br>General: "+rand()+
+            "<br>Red Dot: "+rand()+
+            "<br>2x: "+rand()+
+            "<br>4x: "+rand()+
+            "<br>AWM: "+rand();
+
+        // Show bottom percentage button
+        document.getElementById("finalButton").innerText =
+            "Button " + randPercent() + "%";
+
+        // Fade out device message
+        deviceEl.style.opacity = 0;
+    }, 2500);
+}
+
+// CLICK SOUND + OPTIONAL TTS
+const buttons = document.querySelectorAll('.btn');
+buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Play beep sound
+        const sound = document.getElementById('clickSound');
+        sound.currentTime = 0;
+        sound.play();
+
+        // Optional: text-to-speech (uncomment if you want voice)
+        // const msg = new SpeechSynthesisUtterance("Button pressed");
+        // window.speechSynthesis.speak(msg);
+    });
+});
+</script>
+
+</body>
+</html>
