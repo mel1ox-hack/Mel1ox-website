@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get User</title>
+<style>
+body {
+    background: black;
+    color: #00ff00;
+    font-family: monospace;
+    text-align: center;
+    padding: 20px;
+}
+
+.user-box {
+    border: 1px solid #0f0;
+    padding: 15px;
+    margin: 20px auto;
+    width: 80%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.user-box:hover {
+    background: #0f0;
+    color: black;
+}
+</style>
+</head>
+<body>
+
+<h1>MEL1OX USERNAME ¡</h1>
+
+<!-- Clickable username -->
+<div class="user-box" id="userBox" onclick="copyUser()">
+    MEL1USERNM
+</div>
+
+<script>
+function copyUser() {
+    let text = document.getElementById("userBox").innerText.replace(" (Click to copy)", "");
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard: " + text);
+    });
+}
+</script>
+
+</body>
+</html>
